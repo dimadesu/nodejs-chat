@@ -1,17 +1,18 @@
 extends layout
 
 block title
-    | Login
+    | Register
 
 block content
 
     form
-        h2(class="block-panel-heading") Sign in
+        h2(class="block-panel-heading") Register new account
         input(
             type="text"
             class="form-control credentials"
             placeholder="Email address"
-            required="" autofocus=""
+            required=""
+            autofocus=""
         )
         input(
             type="password"
@@ -19,7 +20,7 @@ block content
             placeholder="Password"
             required=""
         )
-        label(class="checkbox")
-            input(type="checkbox", value="remember-me")
-            | Remember me
-        button(class="btn btn-lg btn-primary btn-block", type="submit") Login
+        button(
+            class="btn btn-lg btn-primary btn-block"
+            type="submit"
+        ) Register

@@ -1,0 +1,32 @@
+extends layout
+
+block title
+    | Room
+
+block content
+        h2(class="block-panel-heading") Room #312
+        .row.message-input
+            .col-lg-12
+                .input-group
+                    span.input-group-btn
+                        button.btn.btn-default(type="button") Send
+                    input(type="text", class="form-control")
+        .panel.panel-default
+            .panel-body.chat-body
+                span.message
+                    span.user(style="color: #0A6") User#1
+                        | Hello.
+                span.message
+                    span.user(style="color: #A00") User#2
+                        | Hi!
+                span.message
+                    span.user(style="color: #06F") Alien
+                        | reatings, earthlings! I come in peace. Klaatu barada nikto. Here is my
+                        a(href="#") gift
+                        | to humanity
+                span.message
+                    span.user(style="color: #A00") User#2
+                        | Wow!
+                span.message
+                    span.user(style="color: #0A6") User#1
+                        | Radical, dude!
