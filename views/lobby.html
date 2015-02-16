@@ -8,8 +8,8 @@
     <meta name="author" content="">
     <title>Template</title>
     <!-- Bootstrap core CSS -->
-    <link href="css/bootstrap.min.css" rel="stylesheet">
-    <link href="css/main.css" rel="stylesheet">
+    <link href="../../frontend/assets/css/bootstrap.min.css" rel="stylesheet">
+    <link href="../../frontend/assets/css/main.css" rel="stylesheet">
     <!--[if lt IE 9]><script src="../../docs-assets/js/ie8-responsive-file-warning.js"></script><![endif]-->
     <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
     <!--[if lt IE 9]>
@@ -21,30 +21,28 @@
   </head>
   <body>
     <div class="block-panel">
-      <h2 class="block-panel-heading">Room #312</h2>
-      <div class="row message-input">
+      <div class="row">
         <div class="col-lg-12">
           <div class="input-group">
             <span class="input-group-btn">
-              <button class="btn btn-default" type="button">Send</button>
+              <button class="btn btn-default" type="button">Create room</button>
             </span>
             <input type="text" class="form-control">
           </div>
         </div>
       </div>
-      <div class="panel panel-default">
-        <div class="panel-body chat-body">
-          <span class="message"><span class="user" style="color: #0A6">User#1</span>: Hello.</span>
-          <span class="message"><span class="user" style="color: #A00">User#2</span>: Hi!</span>
-          <span class="message"><span class="user" style="color: #06F">Alien</span>: Greatings, earthlings! I come in peace. Klaatu barada nikto. Here is my <a href="#">gift</a> to humanity</span>
-          <span class="message"><span class="user" style="color: #A00">User#2</span>: Wow!</span>
-          <span class="message"><span class="user" style="color: #0A6">User#1</span>: Radical, dude!</span>
-        </div>
+      <h1>Available rooms</h1>
+      <div class="list-group">
+        <a href="#" class="list-group-item active">Room #1</a>
+        <a href="#" class="list-group-item">Room #2</a>
+        <a href="#" class="list-group-item">Test room</a>
+        <a href="#" class="list-group-item">Stupid room</a>
+        <a href="#" class="list-group-item">Support room</a>
       </div>
     </div>
     <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
     <script src="https://code.jquery.com/jquery.js"></script>
     <!-- Include all compiled plugins (below), or include individual files as needed -->
-    <script src="js/bootstrap.min.js"></script>
+    <script src="../../frontend/assets/js/bootstrap.min.js"></script>
   </body>
 </html>
