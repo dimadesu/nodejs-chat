@@ -5,15 +5,20 @@ block title
 
 block content
     .row
-        .col-lg-12
-            .input-group
-                .input-group-btn
-                    button(class="btn btn-default", type="button") Create room
-                input(type="text", class="form-control")
-    h1 Available rooms
-    .list-group
-        a(href="#", class="list-group-item active") Room #1
-        a(href="#", class="list-group-item") Room #2
-        a(href="#", class="list-group-item") Test room
-        a(href="#", class="list-group-item") Stupid room
-        a(href="#", class="list-group-item") Support room
+        .col-md-6.col-md-offset-3.col-sm-8.col-sm-offset-2
+            h1 Lobby
+            .row
+                .col-lg-12
+                    .form-group
+                        .input-group
+                            input(type="text", class="form-control", placeholder="New Room")
+                            .input-group-btn
+                                button(class="btn btn-primary", type="button")
+                                    span.glyphicon.glyphicon-plus(aria-hidden="true")
+                                    |  Create Room
+            .list-group
+                a(href="#", class="list-group-item active") Room #1
+                a(href="#", class="list-group-item") Room #2
+                a(href="#", class="list-group-item") Test room
+                a(href="#", class="list-group-item") Stupid room
+                a(href="#", class="list-group-item") Support room

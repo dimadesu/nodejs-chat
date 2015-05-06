@@ -6,8 +6,8 @@ var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 
 var routes = require('./routes/index');
-var login = require('./routes/login');
-var register = require('./routes/register');
+var signin = require('./routes/signin');
+var signup = require('./routes/signup');
 var lobby = require('./routes/lobby');
 var room = require('./routes/room');
 
@@ -23,11 +23,12 @@ app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
+app.use(express.static(path.join(__dirname, 'bower_components')));
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', routes);
-app.use('/login', login);
-app.use('/register', register);
+app.use('/signin', signin);
+app.use('/signup', signup);
 app.use('/lobby', lobby);
 app.use('/room', room);
 
