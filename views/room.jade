@@ -7,29 +7,17 @@ block content
     .row
         .col-lg-12
             h1 Room #312
-            .row.message-input
-                .col-lg-12
-                    .form-group
-                        .input-group
-                            input(type="text", class="form-control", placeholder="Enter message")
-                            span.input-group-btn
-                                button.btn.btn-primary(type="button") Send
-            .panel.panel-default
-                .panel-body.chat-body
-                    .message
-                        span.user(style="color: #0A6") User#1
-                            | Hello.
-                    .message
-                        span.user(style="color: #A00") User#2
-                            | Hi!
-                    .message
-                        span.user(style="color: #06F") Alien
-                            | reatings, earthlings! I come in peace. Klaatu barada nikto. Here is my
-                            a(href="#") gift
-                            | to humanity
-                    .message
-                        span.user(style="color: #A00") User#2
-                            | Wow!
-                    .message
-                        span.user(style="color: #0A6") User#1
-                            | Radical, dude!
+            form
+                .row.message-input
+                    .col-lg-12
+                        .form-group
+                            .input-group
+                                input#new-message(type="text", class="form-control", placeholder="Enter message")
+                                span.input-group-btn
+                                    button.btn.btn-primary(type="submit") Send
+            .panel.panel-default.chat-body-wrap#chat-body-wrap
+                .panel-body.chat-body#chat-body
+
+block scripts
+    script(src = '/socket.io/socket.io.js')
+    script(src='/js/main.js')
