@@ -17,8 +17,5 @@ block content
                                     span.glyphicon.glyphicon-plus(aria-hidden="true")
                                     |  Create Room
             .list-group
-                a(href="#", class="list-group-item active") Room #1
-                a(href="#", class="list-group-item") Room #2
-                a(href="#", class="list-group-item") Test room
-                a(href="#", class="list-group-item") Stupid room
-                a(href="#", class="list-group-item") Support room
+                each val in rooms
+                    a(href="/room", class="list-group-item") #{val}

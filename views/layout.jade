@@ -12,15 +12,14 @@ html
         .container
             p.text-center
                 - var sepataror = "&nbsp;|&nbsp;"
-                a(href="/signin") Sign In
-                |!{sepataror}
-                a(href="/signup") Sign Up
-                |!{sepataror}
-                a(href="/auth/signout") Sign Out
-                |!{sepataror}
-                a(href="/lobby") Lobby
-                |!{sepataror}
-                a(href="/room") Room
+                unless session.passport.user
+                    a(href="/signin") Sign In
+                    |!{sepataror}
+                    a(href="/signup") Sign Up
+                if session.passport.user
+                    | Signed in as
+                    strong &nbsp;#{session.passport.user}&nbsp;
+                    a(href="/signout") Sign Out
 
             block content
     script(src='/jquery/dist/jquery.min.js')

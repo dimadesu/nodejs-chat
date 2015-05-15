@@ -3,37 +3,51 @@ var router = express.Router();
 
 module.exports = function(passport){
 
-    router.get('/success', function(req, res){
-        res.send({state: 'success', user: req.user ? req.user : null});
+    router.get('/', function(req, res, next) {
+        if(!req.isAuthenticated()){
+            return res.redirect('/signin');
+        } else {
+            return res.redirect('/lobby');
+        }
     });
 
-    router.get('/failure', function(req, res){
-        res.send({state: 'failure', user: null, message: req.session.flash.error || "Invalid username or password"});
-    });
-
-    //log in
-    router.post('/signin', passport.authenticate('signin', {
-        successRedirect: '/auth/success',
-        failureRedirect: '/auth/failure'
-    }));
-
-    //sign up
     router.post(
-        '/signup',
-        passport.authenticate(
-            'signup',
-            {
-                successRedirect: '/auth/success',
-                failureRedirect: '/auth/failure',
-                failureFlash: true
-            }
-        )
+        '/signin',
+        function(req, res, next) {
+            passport.authenticate('signin', function (err, user, info) {
+                if (err) {
+                    return next(err); // will generate a 500 error
+                }
+                if (!user) {
+                    return res.render('signin', info);
+                }
+                req.logIn(user, function(err) {
+                    if (err) { return next(err); }
+                    return res.redirect('/lobby');
+                });
+            })(req, res, next);
+        }
     );
 
-    //log out
+    router.post('/signup', function(req, res, next) {
+        passport.authenticate('signup', function (err, user, info) {
+            if (err) {
+                return next(err); // will generate a 500 error
+            }
+            if (!user) {
+                return res.render('signup', info);
+            }
+            req.logIn(user, function(err) {
+                if (err) { return next(err); }
+                return res.redirect('/lobby');
+            });
+        })(req, res, next);
+    });
+
     router.get('/signout', function(req, res) {
-        req.logout();
-        res.redirect('/');
+        req.session.destroy(function (err) {
+            res.redirect('/');
+        });
     });
 
     return router;

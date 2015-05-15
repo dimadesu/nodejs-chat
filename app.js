@@ -23,9 +23,10 @@ app.set('view engine', 'jade');
 
 app.use(favicon(__dirname + '/public/img/favicon.ico'));
 app.use(logger('dev'));
-app.use(session({
+app.sessionMiddleware = session({
     secret: 'zekrett'
-}));
+});
+app.use(app.sessionMiddleware);
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
@@ -36,12 +37,17 @@ app.use(passport.session());
 var initPassport = require('./passport-init');
 initPassport(passport);
 
+// session data for jade
+app.use(function(req, res, next){
+    res.locals.session = req.session;
+    next();
+});
+
 app.use(express.static(path.join(__dirname, 'bower_components')));
 app.use(express.static(path.join(__dirname, 'public')));
 
 var auth = require('./routes/authenticate')(passport);
-app.use('/auth', auth);
-app.use('/', index);
+app.use('/', auth);
 app.use('/signin', signin);
 app.use('/signup', signup);
 app.use('/lobby', lobby);
