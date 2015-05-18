@@ -3,6 +3,11 @@ var path = require('path');
 var favicon = require('serve-favicon');
 var logger = require('morgan');
 var passport = require('passport');
+var mongoose = require('mongoose');
+mongoose.connect('mongodb://localhost:27017/chirp-test');
+// Has to be before initializing passport
+require('./models/models');
+
 var session = require('express-session');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
@@ -34,12 +39,12 @@ app.use(flash());
 
 app.use(passport.initialize());
 app.use(passport.session());
-var initPassport = require('./passport-init');
+var initPassport = require('./passport');
 initPassport(passport);
 
 // session data for jade
 app.use(function(req, res, next){
-    res.locals.session = req.session;
+    res.locals.user = req.user;
     next();
 });
 
@@ -83,6 +88,5 @@ app.use(function(err, req, res, next) {
         error: {}
     });
 });
-
 
 module.exports = app;

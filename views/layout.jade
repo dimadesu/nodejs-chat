@@ -12,13 +12,13 @@ html
         .container
             p.text-center
                 - var sepataror = "&nbsp;|&nbsp;"
-                unless session.passport.user
+                unless user
                     a(href="/signin") Sign In
                     |!{sepataror}
                     a(href="/signup") Sign Up
-                if session.passport.user
+                if user
                     | Signed in as
-                    strong &nbsp;#{session.passport.user}&nbsp;
+                    strong &nbsp;#{user.username}&nbsp;
                     a(href="/signout") Sign Out
 
             block content

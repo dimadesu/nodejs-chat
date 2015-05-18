@@ -5,21 +5,25 @@ var $newMessage = $('#new-message');
 var $chatBodyWrap = $('#chat-body-wrap');
 var $chatBody = $('#chat-body');
 
-function addMessageFromUser (resp) {
-    var $m = $('<div class="message text-' + resp.data.color +'">')
-        .append($('<span class="user">').text(resp.data.user))
+function appendItem ($el, msg, username, color) {
+    var $m = $('<div class="message text-' + color +'">')
+        .append(msg)
         .append(' ')
-        .append(resp.msg);
-    $chatBody.append($m);
+        .append($('<span class="user">').text(username));
+    return $el.append($m);
+}
+
+function addMessageFromUser (resp) {
+    if(typeof resp === 'object') {
+        appendItem($chatBody, resp.msg.text, resp.msg.created_by, resp.data.color);
+    } else {
+        appendItem($chatBody, resp.msg, resp.data.user, resp.data.color);
+    }
     $chatBodyWrap.scrollTop($chatBody.innerHeight() - $chatBodyWrap.innerHeight());
 }
 
 function addMessageFromAnnouncer (resp) {
-    var $m = $('<div class="message text-muted">')
-        .append(resp.msg)
-        .append(' ')
-        .append($('<span class="user">').text(resp.data.user));
-    $chatBody.append($m);
+    appendItem($chatBody, resp.msg, resp.data.user, 'muted');
     $chatBodyWrap.scrollTop($chatBody.innerHeight() - $chatBodyWrap.innerHeight());
 }
 

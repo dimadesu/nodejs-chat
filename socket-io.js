@@ -12,6 +12,9 @@ function getRandomColor () {
 }
 
 var app = require('./app');
+var mongoose = require('mongoose');
+var User = mongoose.model('User');
+var Post = mongoose.model('Post');
 
 module.exports = function (server) {
 
@@ -41,14 +44,27 @@ module.exports = function (server) {
 
         console.log(data.user, 'connected');
 
+        socket.broadcast.emit('hi-to-client', {
+            data: data,
+            msg: 'connected'
+        });
+
         socket.emit('hi-to-client', {
             data: data,
             msg: 'hi'
         });
 
-        socket.broadcast.emit('hi-to-client', {
-            data: data,
-            msg: 'connected'
+        var stream = Post.find().stream();
+
+        stream.on('error', function (err) {
+            console.error(err);
+        });
+
+        stream.on('data', function (post) {
+            socket.emit('server-to-client', {
+                data: data,
+                msg: post
+            });
         });
 
         /* Disconnect */
@@ -70,14 +86,27 @@ module.exports = function (server) {
 
             console.log(data.user, 'says', msg);
 
-            socket.emit('server-to-client', {
-                data: data,
-                msg: msg
+            var post = new Post({
+                text: msg,
+                created_by: data.user
             });
 
-            socket.broadcast.emit('server-to-client', {
-                data: data,
-                msg: msg
+            post.save(function (err, savedPost) {
+
+                if (err) {
+                    return console.log(err);
+                }
+
+                socket.emit('server-to-client', {
+                    data: data,
+                    msg: msg
+                });
+
+                socket.broadcast.emit('server-to-client', {
+                    data: data,
+                    msg: msg
+                });
+
             });
 
         });
