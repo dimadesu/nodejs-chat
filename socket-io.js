@@ -1,4 +1,5 @@
 var app = require('./app');
+var rooms = require('./models/rooms');
 var mongoose = require('mongoose');
 var User = mongoose.model('User');
 var Post = mongoose.model('Post');
@@ -15,7 +16,7 @@ module.exports = function (server) {
 
         /* Connection */
 
-        var connectedUser;
+        var connectedUser, oldRoom, newRoom;
 
         if (
             socket.request.session === undefined ||
@@ -26,61 +27,22 @@ module.exports = function (server) {
             return;
         }
 
-        User.findById(socket.request.session.passport.user, function (err, user) {
-            if (err) {
-                return console.error(err);
-            }
-
-            connectedUser = user;
-
-            console.log(connectedUser.username, 'connected');
-
-            var stream = Post.find().populate('created_by').sort({'created_at': 'desc'}).limit(10).stream();
-
-            stream.on('error', function (err) {
-                console.error(err);
-            });
-
-            stream.on('data', function (post) {
-                if (err) {
-                    return console.error(err);
-                }
-                console.log('post: ', post);
-                console.log('post.created_by: ', post.created_by);
-                delete post.created_by.password;
-                socket.emit('server-to-client', {
-                    user: post.created_by,
-                    msg: post
-                });
-            });
-
-            stream.on('end', function () {
-                socket.broadcast.emit('server-to-client-user-connected', {
-                    user: connectedUser,
-                    msg: 'connected'
-                });
-
-                socket.emit('server-to-client-user-connected', {
-                    user: connectedUser,
-                    msg: 'connected'
-                });
-            });
-        });
-
         /* Disconnect */
 
         socket.on('disconnect', function(){
 
             console.log(connectedUser.username, 'disconnected');
 
-            socket.broadcast.emit('server-to-client-user-disconnected', {
-                user: connectedUser,
-                msg: 'disconnected'
-            });
+            socket.broadcast
+                .to(newRoom)
+                .emit('server-to-client-announce', {
+                    user: connectedUser,
+                    msg: 'disconnected'
+                });
 
         });
 
-        /* Etc. */
+        /* Chat post */
 
         socket.on('client-to-server', function(msg){
 
@@ -102,14 +64,96 @@ module.exports = function (server) {
                     msg: msg
                 });
 
-                socket.broadcast.emit('server-to-client', {
-                    user: connectedUser,
-                    msg: msg
-                });
+                socket.broadcast
+                    .to(newRoom)
+                    .emit('server-to-client', {
+                        user: connectedUser,
+                        msg: msg
+                    });
 
             });
 
         });
+
+        socket.on('client-to-server-switch-room', function (roomId) {
+
+            oldRoom = newRoom;
+            newRoom = roomId;
+
+            if (!connectedUser) {
+
+                User.findById(socket.request.session.passport.user, function (err, user) {
+
+                    if (err) {
+                        return console.error(err);
+                    }
+
+                    connectedUser = user;
+
+                    receivedUserCb();
+
+                });
+
+            } else {
+
+                receivedUserCb();
+
+            }
+
+        });
+
+        function receivedUserCb () {
+
+            console.log(connectedUser.username, 'connected');
+
+            /* History */
+
+            var stream = Post.find().populate('created_by').sort({'created_at': 'desc'}).limit(10).stream();
+
+            stream.on('error', function (err) {
+                console.error(err);
+            });
+
+            // Stream posts one by one while they're being fetched
+            stream.on('data', function (post) {
+                delete post.created_by.password;
+                socket.emit('server-to-client', {
+                    user: post.created_by,
+                    msg: post
+                });
+            });
+
+            // When all posts are fetched run this
+            stream.on('end', function () {
+
+                //socket.leave(oldRoom);
+                socket.join(newRoom);
+
+                // Send message to old room (no need to send to myself)
+                /*socket.broadcast
+                    .to(oldRoom)
+                    .emit('server-to-client-announce', {
+                        user: connectedUser,
+                        msg: 'left the room'
+                    });*/
+
+                /* Send message to new room */
+                var newRoomData = {
+                    user: connectedUser,
+                    msg: 'joined the room ' + newRoom
+                };
+
+                // Send to myself
+                socket.emit('server-to-client-announce', newRoomData);
+
+                // Send to others
+                socket.broadcast
+                    .to(newRoom)
+                    .emit('server-to-client-announce', newRoomData);
+
+            });
+
+        }
 
     });
 

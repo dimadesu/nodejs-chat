@@ -17,5 +17,5 @@ block content
                                     span.glyphicon.glyphicon-plus(aria-hidden="true")
                                     |  Create Room
             .list-group
-                each val in rooms
-                    a(href="/room", class="list-group-item") #{val}
+                each room in rooms
+                    a(href="/room/#{room}", class="list-group-item") #{room}

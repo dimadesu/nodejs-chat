@@ -1,5 +1,6 @@
 var express = require('express');
 var router = express.Router();
+var rooms = require('../models/rooms');
 
 router.use(function (req, res, next) {
     if(!req.isAuthenticated()){
@@ -10,13 +11,7 @@ router.use(function (req, res, next) {
 
 router.get('/', function(req, res, next) {
     res.render('lobby', {
-        rooms: [
-            'Room #1',
-            'Room #2',
-            'Test Room',
-            'Stupid Room',
-            'Support Room'
-        ]
+        rooms: rooms
     });
 });
 

@@ -8,8 +8,10 @@ router.use(function (req, res, next) {
     return next();
 });
 
-router.get('/', function(req, res, next) {
-    res.render('room');
+router.get('/:roomId', function(req, res, next) {
+    res.render('room', {
+        roomId: req.params.roomId
+    });
 });
 
 module.exports = router;
