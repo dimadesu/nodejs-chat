@@ -1,16 +1,3 @@
-/**
- * Returns a random integer between min (inclusive) and max (inclusive)
- * Using Math.round() will give you a non-uniform distribution!
- */
-function getRandomInt(min, max) {
-    return Math.floor(Math.random() * (max - min + 1)) + min;
-}
-
-function getRandomColor () {
-    var colors = ['primary', 'success', 'info', 'warning', 'danger'];
-    return colors[getRandomInt(0, colors.length - 1)];
-}
-
 var app = require('./app');
 var mongoose = require('mongoose');
 var User = mongoose.model('User');
@@ -28,6 +15,8 @@ module.exports = function (server) {
 
         /* Connection */
 
+        var connectedUser;
+
         if (
             socket.request.session === undefined ||
             socket.request.session.passport === undefined ||
@@ -37,33 +26,44 @@ module.exports = function (server) {
             return;
         }
 
-        var data = {
-            user: socket.request.session.passport.user,
-            color: getRandomColor()
-        };
+        User.findById(socket.request.session.passport.user, function (err, user) {
+            if (err) {
+                return console.error(err);
+            }
 
-        console.log(data.user, 'connected');
+            connectedUser = user;
 
-        socket.broadcast.emit('hi-to-client', {
-            data: data,
-            msg: 'connected'
-        });
+            console.log(connectedUser.username, 'connected');
 
-        socket.emit('hi-to-client', {
-            data: data,
-            msg: 'hi'
-        });
+            var stream = Post.find().populate('created_by').sort({'created_at': 'desc'}).limit(10).stream();
 
-        var stream = Post.find().stream();
+            stream.on('error', function (err) {
+                console.error(err);
+            });
 
-        stream.on('error', function (err) {
-            console.error(err);
-        });
+            stream.on('data', function (post) {
+                if (err) {
+                    return console.error(err);
+                }
+                console.log('post: ', post);
+                console.log('post.created_by: ', post.created_by);
+                delete post.created_by.password;
+                socket.emit('server-to-client', {
+                    user: post.created_by,
+                    msg: post
+                });
+            });
 
-        stream.on('data', function (post) {
-            socket.emit('server-to-client', {
-                data: data,
-                msg: post
+            stream.on('end', function () {
+                socket.broadcast.emit('hi-to-client', {
+                    user: connectedUser,
+                    msg: 'connected'
+                });
+
+                socket.emit('hi-to-client', {
+                    user: connectedUser,
+                    msg: 'hi'
+                });
             });
         });
 
@@ -71,10 +71,10 @@ module.exports = function (server) {
 
         socket.on('disconnect', function(){
 
-            console.log(data.user, 'disconnected');
+            console.log(connectedUser.username, 'disconnected');
 
             socket.broadcast.emit('to-client-disconnect', {
-                data: data,
+                user: connectedUser,
                 msg: 'disconnected'
             });
 
@@ -84,11 +84,11 @@ module.exports = function (server) {
 
         socket.on('client-to-server', function(msg){
 
-            console.log(data.user, 'says', msg);
+            console.log(connectedUser.username, 'says', msg);
 
             var post = new Post({
                 text: msg,
-                created_by: data.user
+                created_by: connectedUser._id
             });
 
             post.save(function (err, savedPost) {
@@ -98,12 +98,12 @@ module.exports = function (server) {
                 }
 
                 socket.emit('server-to-client', {
-                    data: data,
+                    user: connectedUser,
                     msg: msg
                 });
 
                 socket.broadcast.emit('server-to-client', {
-                    data: data,
+                    user: connectedUser,
                     msg: msg
                 });
 

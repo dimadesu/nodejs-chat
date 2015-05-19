@@ -5,6 +5,19 @@ var Post = mongoose.model('Post');
 var LocalStrategy = require('passport-local').Strategy;
 var bCrypt = require('bcrypt-nodejs');
 
+/**
+ * Returns a random integer between min (inclusive) and max (inclusive)
+ * Using Math.round() will give you a non-uniform distribution!
+ */
+function getRandomInt(min, max) {
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
+function getRandomColor () {
+    var colors = ['primary', 'success', 'info', 'warning', 'danger'];
+    return colors[getRandomInt(0, colors.length - 1)];
+}
+
 module.exports = function(passport) {
 
     // Passport needs to be able to serialize and deserialize users to support persistent login sessions
@@ -74,10 +87,12 @@ module.exports = function(passport) {
                     return done(null, false, { message: 'User already exists with username: ' + username });
                 }
 
-                var newUser = new User();
+                var newUser = new User({
+                    username: username,
+                    password: createHash(password),
+                    color: getRandomColor()
+                });
 
-                newUser.username = username;
-                newUser.password = createHash(password);
                 newUser.save(function (err, savedUser) {
                     if (err) {
                         return done(err, false);

@@ -14,7 +14,6 @@ var bodyParser = require('body-parser');
 var flash = require('connect-flash');
 
 /* Routes */
-var index = require('./routes/index');
 var signin = require('./routes/signin');
 var signup = require('./routes/signup');
 var lobby = require('./routes/lobby');
