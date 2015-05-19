@@ -1,5 +1,4 @@
 var app = require('./app');
-var rooms = require('./models/rooms');
 var mongoose = require('mongoose');
 var User = mongoose.model('User');
 var Post = mongoose.model('Post');
@@ -50,6 +49,7 @@ module.exports = function (server) {
 
             var post = new Post({
                 text: msg,
+                room: newRoom,
                 created_by: connectedUser._id
             });
 
@@ -108,7 +108,14 @@ module.exports = function (server) {
 
             /* History */
 
-            var stream = Post.find().populate('created_by').sort({'created_at': 'desc'}).limit(10).stream();
+            var stream = Post
+                .find({
+                    room: newRoom
+                })
+                .populate('created_by')
+                .sort({'created_at': 'desc'})
+                .limit(10)
+                .stream();
 
             stream.on('error', function (err) {
                 console.error(err);
@@ -140,7 +147,7 @@ module.exports = function (server) {
                 /* Send message to new room */
                 var newRoomData = {
                     user: connectedUser,
-                    msg: 'joined the room ' + newRoom
+                    msg: 'joined the room'
                 };
 
                 // Send to myself

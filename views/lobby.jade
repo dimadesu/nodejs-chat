@@ -9,13 +9,22 @@ block content
             h1 Lobby
             .row
                 .col-lg-12
-                    .form-group
-                        .input-group
-                            input(type="text", class="form-control", placeholder="Room name")
-                            .input-group-btn
-                                button(class="btn btn-primary", type="button")
-                                    span.glyphicon.glyphicon-plus(aria-hidden="true")
-                                    |  Create Room
+                    form(method="post")
+                        .form-group
+                            .input-group
+                                input(name="roomName", type="text", class="form-control", placeholder="Room name")
+                                .input-group-btn
+                                    button(class="btn btn-primary", type="submit")
+                                        span.glyphicon.glyphicon-plus(aria-hidden="true")
+                                        |  Create Room
+                        if message
+                            .form-group
+                                if status === 0
+                                    .alert.alert-danger
+                                        | #{message}
+                                if status === 1
+                                    .alert.alert-success
+                                        | #{message}
             .list-group
                 each room in rooms
-                    a(href="/room/#{room}", class="list-group-item") #{room}
+                    a(href="/room/#{room._id}", class="list-group-item") #{room.name}

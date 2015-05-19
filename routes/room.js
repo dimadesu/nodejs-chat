@@ -1,16 +1,20 @@
 var express = require('express');
 var router = express.Router();
+var mongoose = require('mongoose');
+var Room = mongoose.model('Room');
+var authChecker = require('./auth-checker');
 
-router.use(function (req, res, next) {
-    if(!req.isAuthenticated()){
-        return res.redirect('/signin');
-    }
-    return next();
-});
+authChecker(router);
 
 router.get('/:roomId', function(req, res, next) {
-    res.render('room', {
-        roomId: req.params.roomId
+    Room.findById(req.params.roomId, function (err, room) {
+        if(err){
+            return console.error(err);
+        }
+        return res.render('room', {
+            roomId: room._id,
+            roomName: room.name
+        });
     });
 });
 
