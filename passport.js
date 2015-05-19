@@ -5,6 +5,8 @@ var Post = mongoose.model('Post');
 var LocalStrategy = require('passport-local').Strategy;
 var bCrypt = require('bcrypt-nodejs');
 
+var winston = require('winston');
+
 /**
  * Returns a random integer between min (inclusive) and max (inclusive)
  * Using Math.round() will give you a non-uniform distribution!
@@ -22,14 +24,14 @@ module.exports = function(passport) {
 
     // Passport needs to be able to serialize and deserialize users to support persistent login sessions
     passport.serializeUser(function (user, done) {
-        console.log('serializing user:', user._id);
+        winston.info('Serializing user:', user._id);
         //return the unique id for the user
         return done(null, user._id);
     });
 
     //Deserialize user will call with the unique id provided by serialize user
     passport.deserializeUser(function (id, done) {
-        console.log('deserializing user:', id);
+        winston.info('Deserializing user:', id);
         User.findById(id, function (err, user) {
             if (err) {
                 return done (err, false);
@@ -97,7 +99,7 @@ module.exports = function(passport) {
                     if (err) {
                         return done(err, false);
                     }
-                    console.log('save new user "' + username + '" to DB');
+                    winston.info('Save new user "' + username + '" to DB');
                     return done(null, savedUser);
                 });
 

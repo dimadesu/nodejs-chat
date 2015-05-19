@@ -1,6 +1,7 @@
 var express = require('express');
 var router = express.Router();
 var authChecker = require('./auth-checker');
+var winston = require('winston');
 var mongoose = require('mongoose');
 var Room = mongoose.model('Room');
 
@@ -10,7 +11,7 @@ router.get('/', function(req, res, next) {
 
     Room.find(function (err, rooms) {
         if(err) {
-            return console.log(err);
+            return winston.error(err);
         }
 
         return res.render('lobby', {
@@ -23,7 +24,7 @@ router.get('/', function(req, res, next) {
 router.post('/', function(req, res, next) {
     var roomName = req.body.roomName;
 
-    console.log('roomName: ', roomName);
+    winston.info('roomName: ', roomName);
 
     if (!roomName || roomName.trim().length === 0) {
         // Error
@@ -42,15 +43,15 @@ router.post('/', function(req, res, next) {
     newRoom.save(function (err, savedRoom) {
 
         if (err) {
-            return console.error(err);
+            return winston.error(err);
         }
 
-        console.log('saved new room "' + savedRoom.name + '" to DB');
+        winston.info('Saved new room "' + savedRoom.name + '" to DB');
 
         // Fetch all rooms
         Room.find(function (err, rooms) {
             if (err) {
-                return console.log(err);
+                return winston.error(err);
             }
 
             return res.render('lobby', {

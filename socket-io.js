@@ -1,4 +1,5 @@
 var app = require('./app');
+var winston = require('winston');
 var mongoose = require('mongoose');
 var User = mongoose.model('User');
 var Post = mongoose.model('Post');
@@ -22,7 +23,7 @@ module.exports = function (server) {
             socket.request.session.passport === undefined ||
             socket.request.session.passport.user === undefined
         ) {
-            console.log('No session');
+            winston.warn('No session');
             return;
         }
 
@@ -30,7 +31,7 @@ module.exports = function (server) {
 
         socket.on('disconnect', function(){
 
-            console.log(connectedUser.username, 'disconnected');
+            winston.info(connectedUser.username, 'disconnected');
 
             socket.broadcast
                 .to(newRoom)
@@ -45,7 +46,7 @@ module.exports = function (server) {
 
         socket.on('client-to-server', function(msg){
 
-            console.log(connectedUser.username, 'says', msg);
+            winston.info(connectedUser.username, 'says', msg);
 
             var post = new Post({
                 text: msg,
@@ -56,7 +57,7 @@ module.exports = function (server) {
             post.save(function (err, savedPost) {
 
                 if (err) {
-                    return console.log(err);
+                    return winston.error(err);
                 }
 
                 socket.emit('server-to-client', {
@@ -85,7 +86,7 @@ module.exports = function (server) {
                 User.findById(socket.request.session.passport.user, function (err, user) {
 
                     if (err) {
-                        return console.error(err);
+                        return winston.error(err);
                     }
 
                     connectedUser = user;
@@ -104,7 +105,7 @@ module.exports = function (server) {
 
         function receivedUserCb () {
 
-            console.log(connectedUser.username, 'connected');
+            winston.info(connectedUser.username, 'connected');
 
             /* History */
 
@@ -118,7 +119,7 @@ module.exports = function (server) {
                 .stream();
 
             stream.on('error', function (err) {
-                console.error(err);
+                winston.error(err);
             });
 
             // Stream posts one by one while they're being fetched

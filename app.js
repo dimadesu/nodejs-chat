@@ -1,7 +1,7 @@
 var express = require('express');
 var path = require('path');
 var favicon = require('serve-favicon');
-var logger = require('morgan');
+var winston = require('winston');
 var passport = require('passport');
 var mongoose = require('mongoose');
 mongoose.connect('mongodb://localhost:27017/nodejs-chat');
@@ -26,7 +26,6 @@ app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'jade');
 
 app.use(favicon(__dirname + '/public/img/favicon.ico'));
-app.use(logger('dev'));
 app.sessionMiddleware = session({
     secret: 'zekrett'
 });

@@ -1,5 +1,6 @@
 var express = require('express');
 var router = express.Router();
+var winston = require('winston');
 
 module.exports = function(passport){
 
@@ -47,7 +48,7 @@ module.exports = function(passport){
     router.get('/signout', function(req, res) {
         req.session.destroy(function (err) {
             if (err) {
-                return console.error(err);
+                return winston.error(err);
             }
             return res.redirect('/');
         });
