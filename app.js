@@ -4,7 +4,7 @@ var favicon = require('serve-favicon');
 var logger = require('morgan');
 var passport = require('passport');
 var mongoose = require('mongoose');
-mongoose.connect('mongodb://localhost:27017/chirp-test');
+mongoose.connect('mongodb://localhost:27017/nodejs-chat');
 // Has to be before initializing passport
 require('./models/models');
 

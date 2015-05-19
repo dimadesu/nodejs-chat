@@ -55,14 +55,14 @@ module.exports = function (server) {
             });
 
             stream.on('end', function () {
-                socket.broadcast.emit('hi-to-client', {
+                socket.broadcast.emit('server-to-client-user-connected', {
                     user: connectedUser,
                     msg: 'connected'
                 });
 
-                socket.emit('hi-to-client', {
+                socket.emit('server-to-client-user-connected', {
                     user: connectedUser,
-                    msg: 'hi'
+                    msg: 'connected'
                 });
             });
         });
@@ -73,7 +73,7 @@ module.exports = function (server) {
 
             console.log(connectedUser.username, 'disconnected');
 
-            socket.broadcast.emit('to-client-disconnect', {
+            socket.broadcast.emit('server-to-client-user-disconnected', {
                 user: connectedUser,
                 msg: 'disconnected'
             });
