@@ -17,10 +17,14 @@ html
                     |!{sepataror}
                     a(href="/signup") Sign Up
                 if user
-                    | Signed in as
-                    strong &nbsp;#{user.username}&nbsp;
+                    | Signed in as&nbsp;
+                    strong #{user.username}
+                    | !{sepataror}
+                    a(href="/lobby") Lobby
+                    |!{sepataror}
+                    a(href="/upload") Upload
+                    |!{sepataror}
                     a(href="/signout") Sign Out
-
             block content
     script(src='/jquery/dist/jquery.min.js')
     script(src='/bootstrap/dist/js/bootstrap.min.js')

@@ -1,13 +1,19 @@
 var express = require('express');
 var path = require('path');
-var favicon = require('serve-favicon');
 var winston = require('winston');
-var passport = require('passport');
+var favicon = require('serve-favicon');
+
+/* File upload */
+var multer = require('multer');
+
+/* DB */
 var mongoose = require('mongoose');
 mongoose.connect('mongodb://localhost:27017/nodejs-chat');
 // Has to be before initializing passport
 require('./models/models');
 
+/* Auth */
+var passport = require('passport');
 var session = require('express-session');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
@@ -18,6 +24,7 @@ var signin = require('./routes/signin');
 var signup = require('./routes/signup');
 var lobby = require('./routes/lobby');
 var room = require('./routes/room');
+var upload = require('./routes/upload');
 
 var app = express();
 
@@ -46,8 +53,28 @@ app.use(function(req, res, next){
     next();
 });
 
+/* File upload */
+app.use(multer({
+    dest: './public/uploads/',
+    limits: {
+        files: 1,
+        fileSize: 500 * 1024 // Accepts bytes
+    },
+    rename: function (fieldname, filename) {
+        return filename + Date.now();
+    },
+    onFileUploadStart: function (file) {
+        winston.info('Starting to upload: ' + file.originalname);
+    },
+    onFileUploadComplete: function (file) {
+        winston.info('Uploaded file to ' + file.path);
+    }
+}));
+
 app.use(express.static(path.join(__dirname, 'bower_components')));
 app.use(express.static(path.join(__dirname, 'public')));
+
+/* Routes */
 
 var auth = require('./routes/authenticate')(passport);
 app.use('/', auth);
@@ -55,6 +82,7 @@ app.use('/signin', signin);
 app.use('/signup', signup);
 app.use('/lobby', lobby);
 app.use('/room', room);
+app.use('/upload', upload);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
