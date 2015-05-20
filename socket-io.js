@@ -16,7 +16,7 @@ module.exports = function (server) {
 
         /* Connection */
 
-        var connectedUser, oldRoom, newRoom;
+        var connectedUser, newRoom;
 
         if (
             socket.request.session === undefined ||
@@ -78,7 +78,6 @@ module.exports = function (server) {
 
         socket.on('client-to-server-switch-room', function (roomId) {
 
-            oldRoom = newRoom;
             newRoom = roomId;
 
             if (!connectedUser) {
@@ -134,16 +133,7 @@ module.exports = function (server) {
             // When all posts are fetched run this
             stream.on('end', function () {
 
-                //socket.leave(oldRoom);
                 socket.join(newRoom);
-
-                // Send message to old room (no need to send to myself)
-                /*socket.broadcast
-                    .to(oldRoom)
-                    .emit('server-to-client-announce', {
-                        user: connectedUser,
-                        msg: 'left the room'
-                    });*/
 
                 /* Send message to new room */
                 var newRoomData = {
