@@ -17,6 +17,7 @@ require('./models/models');
 var passport = require('passport');
 var session = require('express-session');
 var cookieParser = require('cookie-parser');
+var MongoStore = require('connect-mongo')(session);
 var bodyParser = require('body-parser');
 var flash = require('connect-flash');
 
@@ -34,13 +35,17 @@ app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'jade');
 
 app.use(favicon(__dirname + '/public/img/favicon.ico'));
+// cookieParser has to be before session middleware
+app.use(cookieParser());
 app.sessionMiddleware = session({
-    secret: 'zekrett'
+    secret: 'zekrett',
+    store: new MongoStore({ mongooseConnection: mongoose.connection })
+
 });
 app.use(app.sessionMiddleware);
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
-app.use(cookieParser());
+
 app.use(flash());
 
 app.use(passport.initialize());
