@@ -26,9 +26,9 @@ app.initSocket = function () {
         var $m = $('<div class="message text-' + color +'">');
 
         $m
-            .append($username)
-            .append(' ')
-            .append(resp.msg);
+        .append($username)
+        .append(' ')
+        .append(resp.msg);
 
         if(isReversed) {
             $chatBody.prepend($m);

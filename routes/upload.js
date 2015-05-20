@@ -1,4 +1,5 @@
 var express = require('express');
+var async = require('async');
 var winston = require('winston');
 var fs = require('fs');
 var router = express.Router();
@@ -52,6 +53,50 @@ router.post('/', function(req, res) {
         });
     }
 
+    function uploadSuccess (callback){
+
+        // Upload success
+        var upload = new Upload ({
+            filename: file.name,
+            created_by: req.user.id
+        });
+
+        upload.save(function (err, savedUpload) {
+
+            if(err) {
+                callback(err)
+            }
+
+            winston.log('File uploaded successfully');
+
+            callback();
+
+        });
+
+    }
+
+    function findUploads (callback) {
+
+        // Get all uploads for this user
+        Upload.find({
+            created_by: req.user.id
+        }, function (err, uploads) {
+
+            if(err) {
+                return callback(err);
+            }
+
+            return res.render('upload', {
+                status: 1,
+                message: 'File uploaded successfully',
+                uploads: uploads,
+                host: req.headers.host
+            });
+
+        });
+
+    }
+
     fs.exists(file.path, function(exists) {
         if(!exists) {
             return res.render('upload', {
@@ -59,38 +104,11 @@ router.post('/', function(req, res) {
                 message: 'Upload failure'
             });
         } else {
-            // Upload success
-            var upload = new Upload ({
-                filename: file.name,
-                created_by: req.user.id
-            });
-
-            upload.save(function (err, savedUpload) {
-
-                if(err) {
-                    return winston.error(err);
-                }
-
-                winston.log('File uploaded successfully');
-
-                // Get all uploads for this user
-                Upload.find({
-                    created_by: req.user.id
-                }, function (err, uploads) {
-
-                    if(err) {
-                        return winston.error(err);
-                    }
-
-                    return res.render('upload', {
-                        status: 1,
-                        message: 'File uploaded successfully',
-                        uploads: uploads,
-                        host: req.headers.host
-                    });
-
-                });
-
+            return async.series([
+                uploadSuccess,
+                findUploads
+            ], function (err) {
+                return winston.error(err);
             });
         }
     });
