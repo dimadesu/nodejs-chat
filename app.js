@@ -1,5 +1,6 @@
 var express = require('express');
 var path = require('path');
+var fs = require('fs');
 var winston = require('winston');
 var favicon = require('serve-favicon');
 
@@ -68,6 +69,14 @@ app.use(multer({
     },
     onFileUploadComplete: function (file) {
         winston.info('Uploaded file to ' + file.path);
+    },
+    onFileSizeLimit: function (file) {
+        winston.warn('Failed file size limit check: ', file.originalname);
+        fs.unlink('./' + file.path); // delete the partially written file
+    },
+    onError: function (error, next) {
+        winston.error(error);
+        next(error);
     }
 }));
 

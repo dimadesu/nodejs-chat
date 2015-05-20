@@ -24,14 +24,12 @@ module.exports = function(passport) {
 
     // Passport needs to be able to serialize and deserialize users to support persistent login sessions
     passport.serializeUser(function (user, done) {
-        winston.info('Serializing user:', user._id);
         //return the unique id for the user
         return done(null, user._id);
     });
 
     //Deserialize user will call with the unique id provided by serialize user
     passport.deserializeUser(function (id, done) {
-        winston.info('Deserializing user:', id);
         User.findById(id, function (err, user) {
             if (err) {
                 return done (err, false);

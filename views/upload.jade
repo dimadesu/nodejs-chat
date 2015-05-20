@@ -6,12 +6,9 @@ block title
 block content
     .row
         .col-md-6.col-md-offset-3.col-sm-8.col-sm-offset-2
-            form(method="post", enctype="multipart/form-data", id="uploadForm")
-                h1 Upload
-                if files
-                    each file, fileIndex in files
-                        each value, key in file
-                            div #{key}: #{value}
+            h1 Uploads
+            h2 Upload new file
+            form.well(method="post", enctype="multipart/form-data")
                 if message
                     .form-group
                         if status === 1
@@ -19,12 +16,21 @@ block content
                         if status === 0
                             .alert.alert-danger= message
                 .form-group
-                    p Image files under 500 KB allowed
-                .form-group
                     input(
                         name="uploadFile",
                         type="file",
                         accept="image/*"
                     )
-                .form-group
-                    button(class="btn btn-primary", type="submit") Upload
+                button.btn.btn-primary(type="submit")
+                    | Upload
+                | &nbsp;
+                span.small Image files under 500 KB allowed
+            h2 Your uploads
+            if uploads && uploads.length > 0
+                ul
+                    each upload, index in uploads
+                        li
+                            //- cannot write host to href or else on localhost browser won't go to link
+                                looks like some browser security feature
+                            a(href="uploads/#{upload.filename}")
+                                | #{host + '/' + upload.filename}
