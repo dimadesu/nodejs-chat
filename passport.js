@@ -1,24 +1,14 @@
 var mongoose = require('mongoose');
 var User = mongoose.model('User');
 var Post = mongoose.model('Post');
+var tokenModelWrap = require('./models/token-model-wrap');
 
+var utils = require('./utils');
 var LocalStrategy = require('passport-local').Strategy;
+var RememberMeStrategy = require('passport-remember-me').Strategy;
 var bCrypt = require('bcrypt-nodejs');
 
 var winston = require('winston');
-
-/**
- * Returns a random integer between min (inclusive) and max (inclusive)
- * Using Math.round() will give you a non-uniform distribution!
- */
-function getRandomInt(min, max) {
-    return Math.floor(Math.random() * (max - min + 1)) + min;
-}
-
-function getRandomColor () {
-    var colors = ['primary', 'success', 'info', 'warning', 'danger'];
-    return colors[getRandomInt(0, colors.length - 1)];
-}
 
 module.exports = function(passport) {
 
@@ -40,6 +30,31 @@ module.exports = function(passport) {
             return done(null, user);
         });
     });
+
+    // TODO: this is to quickly share function in other module, it should be possible to do this better
+    passport.issueToken = function (user, done) {
+        var token = utils.randomString(64);
+        tokenModelWrap.save(token, user.id, function(err) {
+            if (err) { return done(err); }
+            return done(null, token);
+        });
+    };
+
+    passport.use(new RememberMeStrategy(
+        function(token, done) {
+            tokenModelWrap.consume(token, function (err, uid) {
+                if (err) { return done(err); }
+                if (!uid) { return done(null, false); }
+
+                User.findById(uid, function(err, user) {
+                    if (err) { return done(err); }
+                    if (!user) { return done(null, false); }
+                    return done(null, user);
+                });
+            });
+        },
+        passport.issueToken
+    ));
 
     passport.use('signin', new LocalStrategy({
             passReqToCallback: true
@@ -90,7 +105,7 @@ module.exports = function(passport) {
                 var newUser = new User({
                     username: username,
                     password: createHash(password),
-                    color: getRandomColor()
+                    color: utils.getRandomColor()
                 });
 
                 newUser.save(function (err, savedUser) {

@@ -29,5 +29,12 @@ block content
                         placeholder="Password"
                         required=""
                     )
-                .text-center
-                    button(class="btn btn-primary", type="submit") Sign In
+                .form-group
+                    .row
+                        .col-xs-6
+                            .checkbox
+                                label
+                                    input(type="checkbox", name="remember_me")
+                                    | Remember me
+                        .col-xs-6.text-right
+                            button(class="btn btn-primary", type="submit") Sign In

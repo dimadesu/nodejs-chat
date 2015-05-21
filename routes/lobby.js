@@ -48,6 +48,8 @@ router.post('/', function(req, res, next) {
                 return callback(err);
             }
 
+            rooms.push(savedRoom)
+
             winston.info('Saved new room "' + savedRoom.name + '" to DB.');
 
             callback(null, rooms, savedRoom);

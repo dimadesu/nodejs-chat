@@ -11,6 +11,19 @@ var userSchema = new Schema({
     }
 });
 
+// 'Remember me' token
+var tokenSchema = new Schema({
+    token: String,
+    created_by: {
+        type: Schema.Types.ObjectId,
+        ref: 'User'
+    },
+    created_at: {
+        type: Date,
+        default: Date.now
+    }
+});
+
 var uploadSchema = new Schema({
     filename: String,
     created_by: {
@@ -52,6 +65,7 @@ var postSchema = new Schema({
 });
 
 mongoose.model('User', userSchema);
+mongoose.model('Token', tokenSchema);
 mongoose.model('Upload', uploadSchema);
 mongoose.model('Room', roomSchema);
 mongoose.model('Post', postSchema);

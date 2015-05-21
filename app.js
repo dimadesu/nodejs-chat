@@ -37,19 +37,23 @@ app.set('view engine', 'jade');
 app.use(favicon(__dirname + '/public/img/favicon.ico'));
 // cookieParser has to be before session middleware
 app.use(cookieParser());
-app.sessionMiddleware = session({
-    secret: 'zekrett',
-    store: new MongoStore({ mongooseConnection: mongoose.connection })
-
-});
-app.use(app.sessionMiddleware);
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
+// Save session middleware to app to re-use in socket.io
+app.sessionMiddleware = session({
+    secret: 'zekrett',
+    store: new MongoStore({ mongooseConnection: mongoose.connection }),
+    cookie: {
+        maxAge: 5 * 60 * 1000 // 5 minutes
+    }
+});
+app.use(app.sessionMiddleware);
 
 app.use(flash());
 
 app.use(passport.initialize());
 app.use(passport.session());
+app.use(passport.authenticate('remember-me'));
 var initPassport = require('./passport');
 initPassport(passport);
 
@@ -66,7 +70,7 @@ function isMenuItemActive (url, items) {
     });
 }
 
-// session data for jade
+/* Variables to fill header of Jade layout */
 app.use(function(req, res, next){
     res.locals.user = req.user;
     if (!req.user) {

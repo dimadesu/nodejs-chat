@@ -67,7 +67,7 @@ router.post('/', function(req, res) {
                 callback(err)
             }
 
-            winston.log('File uploaded successfully');
+            winston.info('File uploaded successfully');
 
             callback();
 
