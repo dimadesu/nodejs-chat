@@ -1,9 +1,11 @@
 body {
     background-color: #eee;
+    /* For fixed menu top */
+    padding-top: 70px;
 }
 
 .chat-body-wrap {
-    max-height: 200px;
+    height: 300px;
     overflow-y: scroll;
 }
 

@@ -97,7 +97,7 @@ module.exports = function(passport) {
                     if (err) {
                         return done(err, false);
                     }
-                    winston.info('Save new user "' + username + '" to DB');
+                    winston.info('Saved new user "' + username + '" to DB');
                     return done(null, savedUser);
                 });
 

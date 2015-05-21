@@ -53,9 +53,57 @@ app.use(passport.session());
 var initPassport = require('./passport');
 initPassport(passport);
 
+function isMenuItemActive (url, items) {
+    if (!items) {
+        return;
+    }
+    items.some(function (item) {
+        if (item.href === url) {
+            item.isActive = true;
+            return true;
+        }
+        return false;
+    });
+}
+
 // session data for jade
 app.use(function(req, res, next){
     res.locals.user = req.user;
+    if (!req.user) {
+        res.locals.navigation = {
+            right: [
+                {
+                    href: '/signin',
+                    label: 'Sign In'
+                },
+                {
+                    href: '/signup',
+                    label: 'Sign Up'
+                }
+            ]
+        };
+    } else {
+        res.locals.navigation = {
+            left: [
+                {
+                    href: '/lobby',
+                    label: 'Lobby'
+                },
+                {
+                    href: '/upload',
+                    label: 'Uploads'
+                }
+            ],
+            right: [
+                {
+                    href: '/signout',
+                    label: 'Sign Out'
+                }
+            ]
+        };
+    }
+    isMenuItemActive(req.url, res.locals.navigation.left);
+    isMenuItemActive(req.url, res.locals.navigation.right);
     next();
 });
 

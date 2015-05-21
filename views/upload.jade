@@ -1,7 +1,7 @@
 extends layout
 
 block title
-    | Upload
+    | Uploads
 
 block content
     .row
@@ -25,12 +25,12 @@ block content
                     | Upload
                 | &nbsp;
                 span.small Image files under 500 KB allowed
-            h2 Your uploads
             if uploads && uploads.length > 0
+                h2 Your uploads
                 ul
                     each upload, index in uploads
                         li
                             //- cannot write host to href or else on localhost browser won't go to link
                                 looks like some browser security feature
                             a(href="uploads/#{upload.filename}")
-                                | #{host + '/' + upload.filename}
+                                | #{host + '/uploads/' + upload.filename}

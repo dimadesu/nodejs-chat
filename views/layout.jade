@@ -9,22 +9,34 @@ html
         link(rel='stylesheet', href='/bootstrap/dist/css/bootstrap.min.css')
         link(rel='stylesheet', href='/css/main.css')
     body
+        nav.navbar.navbar-default.navbar-fixed-top
+            .container
+                //- Brand and toggle get grouped for better mobile display
+                .navbar-header
+                    button.navbar-toggle.collapsed(
+                        type="button"
+                        data-toggle="collapse"
+                        data-target="#bs-example-navbar-collapse-1"
+                    )
+                        span.sr-only Toggle navigation
+                        span.icon-bar
+                        span.icon-bar
+                        span.icon-bar
+                    span.navbar-brand Node.js Chat
+
+                //- Collect the nav links, forms, and other content for toggling
+                .collapse.navbar-collapse#bs-example-navbar-collapse-1
+                    if navigation.left && navigation.left.length > 0
+                        ul.nav.navbar-nav
+                            each item in navigation.left
+                                li(class = item.isActive === true ? 'active' : '')
+                                    a(href="#{item.href}")= item.label
+                    if navigation.right && navigation.right.length > 0
+                        ul.nav.navbar-nav.navbar-right
+                            each item in navigation.right
+                                li(class = item.isActive === true ? 'active' : '')
+                                    a(href="#{item.href}")= item.label
         .container
-            p.text-center
-                - var sepataror = "&nbsp;|&nbsp;"
-                unless user
-                    a(href="/signin") Sign In
-                    |!{sepataror}
-                    a(href="/signup") Sign Up
-                if user
-                    | Signed in as&nbsp;
-                    strong #{user.username}
-                    | !{sepataror}
-                    a(href="/lobby") Lobby
-                    |!{sepataror}
-                    a(href="/upload") Upload
-                    |!{sepataror}
-                    a(href="/signout") Sign Out
             block content
     script(src='/jquery/dist/jquery.min.js')
     script(src='/bootstrap/dist/js/bootstrap.min.js')
