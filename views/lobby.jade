@@ -25,6 +25,7 @@ block content
                                 if status === 1
                                     .alert.alert-success
                                         | #{message}
-            .list-group
-                each room in rooms
-                    a(href="/room/#{room._id}", class="list-group-item") #{room.name}
+            if rooms && rooms.length > 0
+                .list-group
+                    each room in rooms
+                        a(href="/room/#{room._id}", class="list-group-item") #{room.name}

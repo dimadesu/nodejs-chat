@@ -30,13 +30,12 @@ router.post('/', function(req, res, next) {
     if (!roomName || roomName.trim().length === 0) {
         // Error
         return res.render('lobby', {
-            rooms: rooms,
             status: 0,
-            message: 'Room not created'
+            message: 'Please enter the room name.'
         });
     }
 
-    function saveNewRoom (callback) {
+    function saveNewRoom (rooms, callback) {
 
         var newRoom = new Room({
             name: roomName,
@@ -49,37 +48,57 @@ router.post('/', function(req, res, next) {
                 return callback(err);
             }
 
-            winston.info('Saved new room "' + savedRoom.name + '" to DB');
+            winston.info('Saved new room "' + savedRoom.name + '" to DB.');
 
-            callback(null, savedRoom);
+            callback(null, rooms, savedRoom);
 
         });
 
     }
 
-    function fetchAllRooms (savedRoom, callback) {
+    function fetchAllRooms (callback) {
 
         Room.find(function (err, rooms) {
             if (err) {
                 return callback(err);
             }
 
-            callback(null, savedRoom, rooms);
+            // Check for room name duplicates
+            if (rooms && rooms.length > 0) {
+                var isNameTaken = rooms.some(function (room) {
+                    return room.name === roomName
+                });
+                if (isNameTaken) {
+                    return callback({
+                        isNameTaken: true,
+                        message: 'Name "' + roomName + '" is already taken.'
+                    }, rooms);
+                }
+            }
+
+            return callback(null, rooms);
         });
 
     }
 
     async.waterfall([
-        saveNewRoom,
-        fetchAllRooms
-    ], function (err, savedRoom, rooms) {
+        fetchAllRooms,
+        saveNewRoom
+    ], function (err, rooms, savedRoom) {
+        if (err && err.isNameTaken) {
+            return res.render('lobby', {
+                rooms: rooms,
+                status: 0,
+                message: err.message
+            });
+        }
         if(err) {
             return winston.error(err);
         }
         return res.render('lobby', {
             rooms: rooms,
             status: 1,
-            message: 'Room ' + savedRoom.name + ' created'
+            message: 'Room "' + savedRoom.name + '" created.'
         });
     });
 
