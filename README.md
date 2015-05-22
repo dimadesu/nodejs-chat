@@ -12,4 +12,6 @@
 
 Start `mongod` on defaut port.
 
+`npm start`
+
 In browser navigate to `localhost:3000`

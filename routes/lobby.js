@@ -48,7 +48,7 @@ router.post('/', function(req, res, next) {
                 return callback(err);
             }
 
-            rooms.push(savedRoom)
+            rooms.push(savedRoom);
 
             winston.info('Saved new room "' + savedRoom.name + '" to DB.');
 
@@ -68,7 +68,7 @@ router.post('/', function(req, res, next) {
             // Check for room name duplicates
             if (rooms && rooms.length > 0) {
                 var isNameTaken = rooms.some(function (room) {
-                    return room.name === roomName
+                    return room.name === roomName;
                 });
                 if (isNameTaken) {
                     return callback({

@@ -77,14 +77,18 @@ module.exports = function(passport){
 
     router.get('/signout', function(req, res) {
 
-        // Invalidate/delete the single-use token
-        Token.remove({
-            created_by: req.user.id
-        }, function (err) {
-            if (err) {
-                return winston.error(err);
-            }
-        });
+        if(req.user) {
+
+            // Invalidate/delete the single-use token
+            Token.remove({
+                created_by: req.user.id
+            }, function (err) {
+                if (err) {
+                    return winston.error(err);
+                }
+            });
+
+        }
 
         res.clearCookie('remember_me');
 

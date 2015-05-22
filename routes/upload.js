@@ -64,7 +64,7 @@ router.post('/', function(req, res) {
         upload.save(function (err, savedUpload) {
 
             if(err) {
-                callback(err)
+                callback(err);
             }
 
             winston.info('File uploaded successfully');
